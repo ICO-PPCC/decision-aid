@@ -10,6 +10,13 @@
             font-family: sans-serif;
             font-size: 14px;
         }
+
+        .chart-title {
+            font-family: sans-serif;
+            font-size: 18px;
+            font-weight: bold;
+            fill: #2c5282;
+        }
     </style>
 </head>
 
@@ -27,10 +34,10 @@
 
         // Dimensiones del gráfico
         const width = 640;
-        const height = 400;
-        const marginTop = 20;
-        const marginRight = 20;
-        const marginBottom = 80; // Aumentar margen inferior para la leyenda
+        // const height = 740; // Se calculará dinámicamente
+        const marginTop = 60; // Aumentar margen para el título y padding
+        const marginRight = 40;
+        const marginBottom = 20; // Margen inferior final
         const marginLeft = 40;
 
         // Configuración del grid para los iconos
@@ -41,6 +48,22 @@
         // SVG path para un ícono de persona
         const personPath = "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z";
 
+        // Aplanar los datos para calcular la altura necesaria
+        const flatData = data.flatMap((d) =>
+            Array.from({ length: d.count }, () => ({
+                category: d.category,
+                color: d.color,
+            }))
+        );
+
+        // --- CÁLCULO DE ALTURA DINÁMICO ---
+        const totalIcons = flatData.length;
+        const numRows = Math.ceil(totalIcons / iconsPerRow);
+        const chartContentHeight = numRows * (iconSize + padding);
+        const legendHeight = data.length * 25; // Altura estimada para la leyenda
+        
+        // Altura total calculada para el SVG
+        const height = marginTop + chartContentHeight + legendHeight + marginBottom + 40; // 40 para espacio extra
 
         // Crear el contenedor SVG
         const svg = d3.create("svg")
@@ -50,7 +73,7 @@
             .attr("style", "max-width: 100%; height: auto;");
 
         // Aplanar los datos: crear un objeto por cada "persona"
-        const flatData = data.flatMap((d, i) =>
+        const flatDataForRender = data.flatMap((d, i) =>
             Array.from({ length: d.count }, (_, j) => ({
                 category: d.category,
                 color: d.color,
@@ -59,20 +82,33 @@
             }))
         );
 
-        // Calcular el número total de filas necesarias
-        const totalIcons = flatData.length;
-        const numRows = Math.ceil(totalIcons / iconsPerRow);
-        const chartHeight = numRows * (iconSize + padding);
+        // Añadir borde y fondo al gráfico
+        svg.append("rect")
+            .attr("x", marginLeft - 15)
+            .attr("y", 20) // Posición Y fija para el borde superior
+            .attr("width", (iconsPerRow * (iconSize + padding)) + 10)
+            .attr("height", height - marginBottom - 20) // Ajustar altura del recuadro
+            .attr("fill", "#f7fafc")
+            .attr("stroke", "#e2e8f0")
+            .attr("rx", 8); // Esquinas redondeadas
+
+        // Añadir título
+        svg.append("text")
+            .attr("class", "chart-title")
+            .attr("x", width / 2)
+            .attr("y", 45) // Posición Y fija para el título (20px del borde + 10px padding + 10px para centrar)
+            .attr("text-anchor", "middle")
+            .text("Distribución de Pacientes");
 
         // Añadir un grupo para los iconos
         svg.append("g")
             .selectAll("path")
-            .data(flatData)
+            .data(flatDataForRender)
             .join("path")
             .attr("d", personPath)
             .attr("transform", (d, i) => {
                 const x = marginLeft + (i % iconsPerRow) * (iconSize + padding);
-                const y = marginTop + Math.floor(i / iconsPerRow) * (iconSize + padding);
+                const y = marginTop + Math.floor(i / iconsPerRow) * (iconSize + padding); // marginTop ahora incluye el espacio para el título
                 // Escalamos el path para que quepa en el iconSize
                 return `translate(${x}, ${y}) scale(${iconSize / 24})`;
             })
@@ -80,7 +116,7 @@
 
         // Añadir leyenda/etiquetas
         const legend = svg.append("g")
-            .attr("transform", `translate(${marginLeft}, ${chartHeight + 40})`); // Posicionar leyenda debajo del gráfico
+            .attr("transform", `translate(${marginLeft}, ${chartContentHeight + marginTop + 20})`); // Posicionar leyenda debajo del gráfico
 
         data.forEach((d, i) => {
             const legendItem = legend.append("g")
