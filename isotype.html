@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Isotype</title>
+    <style>
+        .isotype-label {
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script src="js/vendors/d3.v7.js"></script>
+    <script type="module">
+
+        // Datos de ejemplo (pueden ser reemplazados más tarde)
+        const data = [
+            { category: "Pacientes en riesgo", count: 35, color: "#f56565" },
+            { category: "Pacientes en seguimiento", count: 52, color: "#4299e1" },
+            { category: "Pacientes recuperados", count: 13, color: "#48bb78" }
+        ];
+
+        // Dimensiones del gráfico
+        const width = 640;
+        const height = 400;
+        const marginTop = 20;
+        const marginRight = 20;
+        const marginBottom = 80; // Aumentar margen inferior para la leyenda
+        const marginLeft = 40;
+
+        // Configuración del grid para los iconos
+        const iconsPerRow = 20;
+        const iconSize = 20;
+        const padding = 8;
+        
+        // SVG path para un ícono de persona
+        const personPath = "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z";
+
+
+        // Crear el contenedor SVG
+        const svg = d3.create("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [0, 0, width, height])
+            .attr("style", "max-width: 100%; height: auto;");
+
+        // Aplanar los datos: crear un objeto por cada "persona"
+        const flatData = data.flatMap((d, i) =>
+            Array.from({ length: d.count }, (_, j) => ({
+                category: d.category,
+                color: d.color,
+                index: j,
+                groupIndex: i
+            }))
+        );
+
+        // Calcular el número total de filas necesarias
+        const totalIcons = flatData.length;
+        const numRows = Math.ceil(totalIcons / iconsPerRow);
+        const chartHeight = numRows * (iconSize + padding);
+
+        // Añadir un grupo para los iconos
+        svg.append("g")
+            .selectAll("path")
+            .data(flatData)
+            .join("path")
+            .attr("d", personPath)
+            .attr("transform", (d, i) => {
+                const x = marginLeft + (i % iconsPerRow) * (iconSize + padding);
+                const y = marginTop + Math.floor(i / iconsPerRow) * (iconSize + padding);
+                // Escalamos el path para que quepa en el iconSize
+                return `translate(${x}, ${y}) scale(${iconSize / 24})`;
+            })
+            .attr("fill", d => d.color);
+
+        // Añadir leyenda/etiquetas
+        const legend = svg.append("g")
+            .attr("transform", `translate(${marginLeft}, ${chartHeight + 40})`); // Posicionar leyenda debajo del gráfico
+
+        data.forEach((d, i) => {
+            const legendItem = legend.append("g")
+                // Posicionar cada item de la leyenda en una nueva línea
+                .attr("transform", `translate(0, ${i * 25})`);
+
+            legendItem.append("rect")
+                .attr("width", 15)
+                .attr("height", 15)
+                .attr("fill", d.color);
+
+            legendItem.append("text")
+                .attr("class", "isotype-label")
+                .attr("x", 20)
+                .attr("y", 12)
+                .text(`${d.category} (${d.count})`);
+        });
+
+
+        // Adjuntar el SVG al contenedor
+        container.append(svg.node());
+
+    </script>
+</body>
+
+</html>
