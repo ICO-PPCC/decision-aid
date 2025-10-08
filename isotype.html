@@ -75,7 +75,6 @@
         // SVG path para un ícono de persona
         const personPath = "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z";
 
-
         // Aplanar los datos para calcular la altura necesaria
         const flatData = data.flatMap((d) =>
             Array.from({ length: d.count }, () => ({
@@ -399,13 +398,13 @@
 
                 // Capturar el primer gráfico (pictograma)
                 const canvas1 = await html2canvas(document.getElementById('container'), {
-                    scale: 3,
+                    scale: 3, // <-- Cambiado de 2 a 3 para mayor resolución
                     backgroundColor: '#ffffff'
                 });
 
                 // Capturar el segundo gráfico (velocímetro)
                 const canvas2 = await html2canvas(document.getElementById('container-vumeter'), {
-                    scale: 3,
+                    scale: 3, // <-- Cambiado de 2 a 3 para mayor resolución
                     backgroundColor: '#ffffff'
                 });
 
@@ -413,31 +412,54 @@
                 const pageWidth = pdf.internal.pageSize.getWidth();
                 const pageHeight = pdf.internal.pageSize.getHeight();
                 const margin = 10;
-
-                // Agregar primer gráfico
-                const img1Width = pageWidth - (2 * margin);
-                const img1Height = (canvas1.height * img1Width) / canvas1.width;
-
+                const availableWidth = pageWidth - (2 * margin);
+                
+                // Calcular dimensiones del primer gráfico priorizando el ancho
+                const aspectRatio1 = canvas1.width / canvas1.height;
+                let img1Width = availableWidth; // Ocupar todo el ancho disponible
+                let img1Height = img1Width / aspectRatio1;
+                
+                // Si la altura excede el espacio disponible, ajustar
+                const maxHeightPerChart = pageHeight * 0.40;
+                if (img1Height > maxHeightPerChart) {
+                    img1Height = maxHeightPerChart;
+                    img1Width = img1Height * aspectRatio1;
+                }
+                
+                // Centrar horizontalmente el primer gráfico
+                const img1X = (pageWidth - img1Width) / 2;
+                
                 pdf.addImage(
                     canvas1.toDataURL('image/png'),
                     'PNG',
-                    margin,
+                    img1X,
                     margin,
                     img1Width,
                     img1Height
                 );
 
-                // Agregar nueva página para el segundo gráfico
-                pdf.addPage();
-
-                const img2Width = pageWidth - (2 * margin);
-                const img2Height = (canvas2.height * img2Width) / canvas2.width;
+                // Calcular dimensiones del segundo gráfico priorizando el ancho
+                const aspectRatio2 = canvas2.width / canvas2.height;
+                let img2Width = availableWidth; // Ocupar todo el ancho disponible
+                let img2Height = img2Width / aspectRatio2;
+                
+                // Si la altura excede el espacio disponible, ajustar
+                if (img2Height > maxHeightPerChart) {
+                    img2Height = maxHeightPerChart;
+                    img2Width = img2Height * aspectRatio2;
+                }
+                
+                // Centrar horizontalmente el segundo gráfico
+                const img2X = (pageWidth - img2Width) / 2;
+                
+                // Posición Y del segundo gráfico (después del primero + un pequeño espacio)
+                const img2Y = margin + img1Height + 10;
 
                 pdf.addImage(
                     canvas2.toDataURL('image/png'),
                     'PNG',
-                    margin,
-                    margin,
+                    img2X,
+                    img2Y,
                     img2Width,
                     img2Height
                 );
@@ -446,10 +468,10 @@
                 pdf.save('graficos-pacientes.pdf');
 
                 button.disabled = false;
-                button.textContent = 'PDF Generado';
+                button.textContent = '✅ PDF Generado';
 
                 setTimeout(() => {
-                    button.textContent = 'Descargar gráficos en PDF';
+                    button.textContent = '📁 Descargar gráficos en PDF';
                 }, 2000);
 
             } catch (error) {
@@ -458,7 +480,7 @@
                 button.textContent = '❌ Error al generar PDF';
 
                 setTimeout(() => {
-                    button.textContent = '📥 Descargar gráficos en PDF';
+                    button.textContent = '📁 Descargar gráficos en PDF';
                 }, 2000);
             }
         });
