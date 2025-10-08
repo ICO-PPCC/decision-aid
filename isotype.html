@@ -17,12 +17,39 @@
             font-weight: bold;
             fill: #2c5282;
         }
+
+        .download-btn {
+            display: inline-block;
+            margin: 20px 40px;
+            padding: 12px 24px;
+            background-color: #179a22;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .download-btn:hover {
+            background-color: #15aa21bd;
+        }
+
+        .download-btn:active {
+            background-color: #0c8016;
+        }
     </style>
 </head>
 
 <body>
     <div id="container"></div>
+    <div id="container-vumeter" style="margin-top: 15px;"></div>
+    <button id="downloadPdf" class="download-btn">📁 Descargar gráficos en PDF</button>
+
     <script src="js/vendors/d3.v7.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script type="module">
 
         // Datos de ejemplo (pueden ser reemplazados más tarde)
@@ -44,9 +71,10 @@
         const iconsPerRow = 20;
         const iconSize = 20;
         const padding = 8;
-        
+
         // SVG path para un ícono de persona
         const personPath = "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z";
+
 
         // Aplanar los datos para calcular la altura necesaria
         const flatData = data.flatMap((d) =>
@@ -61,7 +89,7 @@
         const numRows = Math.ceil(totalIcons / iconsPerRow);
         const chartContentHeight = numRows * (iconSize + padding);
         const legendHeight = data.length * 25; // Altura estimada para la leyenda
-        
+
         // Altura total calculada para el SVG
         const height = marginTop + chartContentHeight + legendHeight + marginBottom + 40; // 40 para espacio extra
 
@@ -139,6 +167,301 @@
         // Adjuntar el SVG al contenedor
         container.append(svg.node());
 
+        // ============================================
+        // NUEVO GRÁFICO: VELOCÍMETRO DE OPINIÓN SOBRE CRIBADO
+        // ============================================
+
+        const containerVumeter = d3.select("#container-vumeter");
+
+        // Datos del velocímetro - Divididos en 3 partes iguales
+        const gaugeData = [
+            { label: "En contra", startPercent: 0, endPercent: 33.33, color: "#f56565" },
+            { label: "Neutral", startPercent: 33.33, endPercent: 66.66, color: "#ed8936" },
+            { label: "A favor", startPercent: 66.66, endPercent: 100, color: "#48bb78" }
+        ];
+
+        // Valor de la aguja - apuntando al medio del sector verde (A favor)
+        const needleValue = 83.33; // Medio del sector verde: (66.66 + 100) / 2
+
+        // Dimensiones del velocímetro
+        const gaugeWidth = 640; // Mismo ancho total que el pictograma
+        const gaugeHeight = 400;
+        const gaugeMargin = { top: 60, right: 40, bottom: 40, left: 40 };
+
+        // Crear SVG para el velocímetro
+        const svgGauge = d3.create("svg")
+            .attr("width", gaugeWidth)
+            .attr("height", gaugeHeight)
+            .attr("viewBox", [0, 0, gaugeWidth, gaugeHeight])
+            .attr("style", "max-width: 100%; height: auto;");
+
+        // Fondo y borde - mismo ancho que el pictograma
+        const contentWidth = (iconsPerRow * (iconSize + padding)) + 10; // 570px
+        const rectX = marginLeft - 15; // Misma X que el pictograma (25px)
+
+        svgGauge.append("rect")
+            .attr("x", rectX)
+            .attr("y", 10)
+            .attr("width", contentWidth)
+            .attr("height", gaugeHeight - 20)
+            .attr("fill", "#f7fafc")
+            .attr("stroke", "#e2e8f0")
+            .attr("rx", 8);
+
+        // Título
+        svgGauge.append("text")
+            .attr("class", "chart-title")
+            .attr("x", gaugeWidth / 2)
+            .attr("y", 40)
+            .attr("text-anchor", "middle")
+            .text("Opinión sobre el Cribado de Cáncer de Colon");
+
+        // Centro del velocímetro - Desplazado hacia arriba
+        const centerX = gaugeWidth / 2;
+        const centerY = gaugeHeight - 160; // Movido de -80 a -160 (80px hacia arriba)
+        const radius = 150;
+
+        // Grupo principal
+        const gaugeGroup = svgGauge.append("g")
+            .attr("transform", `translate(${centerX}, ${centerY})`);
+
+        // Definir filtro de sombra para la aguja
+        const defs = svgGauge.append("defs");
+        const filter = defs.append("filter")
+            .attr("id", "needle-shadow")
+            .attr("x", "-50%")
+            .attr("y", "-50%")
+            .attr("width", "200%")
+            .attr("height", "200%");
+
+        filter.append("feGaussianBlur")
+            .attr("in", "SourceAlpha")
+            .attr("stdDeviation", 3);
+
+        filter.append("feOffset")
+            .attr("dx", 2)
+            .attr("dy", 2)
+            .attr("result", "offsetblur");
+
+        filter.append("feComponentTransfer")
+            .append("feFuncA")
+            .attr("type", "linear")
+            .attr("slope", 0.5);
+
+        const feMerge = filter.append("feMerge");
+        feMerge.append("feMergeNode");
+        feMerge.append("feMergeNode")
+            .attr("in", "SourceGraphic");
+
+        // Ángulo inicial y final (semicírculo de -90 a +90 grados)
+        const startAngle = -Math.PI / 2; // -90 grados
+        const endAngle = Math.PI / 2;    // +90 grados
+        const angleRange = endAngle - startAngle;
+
+        // Generador de arcos
+        const arc = d3.arc()
+            .innerRadius(radius - 40)
+            .outerRadius(radius)
+            .startAngle(d => startAngle + (d.startPercent / 100) * angleRange)
+            .endAngle(d => startAngle + (d.endPercent / 100) * angleRange);
+
+        // Dibujar los arcos de colores
+        gaugeGroup.selectAll(".gauge-arc")
+            .data(gaugeData)
+            .join("path")
+            .attr("class", "gauge-arc")
+            .attr("d", arc)
+            .attr("fill", d => d.color)
+            .style("cursor", "pointer")
+            .on("mouseover", function (event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("opacity", 0.8);
+            })
+            .on("mouseout", function () {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("opacity", 1);
+            });
+
+        // Calcular el ángulo de la aguja
+        const needleAngle = startAngle + (needleValue / 100) * angleRange;
+        const needleLength = radius - 20;
+
+        // Dibujar la aguja
+        const needleGroup = gaugeGroup.append("g")
+            .attr("class", "needle")
+            .style("filter", "url(#needle-shadow)");
+
+        // Línea de la aguja
+        needleGroup.append("line")
+            .attr("x1", 0)
+            .attr("y1", 0)
+            .attr("x2", 0)
+            .attr("y2", -needleLength)
+            .attr("stroke", "#2d3748")
+            .attr("stroke-width", 3)
+            .attr("stroke-linecap", "round")
+            .attr("transform", `rotate(${(needleAngle * 180) / Math.PI})`);
+
+        // Círculo central de la aguja
+        needleGroup.append("circle")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("r", 8)
+            .attr("fill", "#2d3748");
+
+        needleGroup.append("circle")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("r", 5)
+            .attr("fill", "#ffffff");
+
+        // Etiquetas en los extremos
+        // gaugeGroup.append("text")
+        //     .attr("x", -radius - 10)
+        //     .attr("y", 5)
+        //     .attr("text-anchor", "end")
+        //     .attr("class", "isotype-label")
+        //     .style("font-size", "12px")
+        //     .text("0%");
+
+        // gaugeGroup.append("text")
+        //     .attr("x", radius + 10)
+        //     .attr("y", 5)
+        //     .attr("text-anchor", "start")
+        //     .attr("class", "isotype-label")
+        //     .style("font-size", "12px")
+        //     .text("100%");
+
+        // Valor actual en el centro
+        gaugeGroup.append("text")
+            .attr("x", 0)
+            .attr("y", 40)
+            .attr("text-anchor", "middle")
+            .attr("class", "isotype-label")
+            .style("font-size", "28px")
+            .style("font-weight", "bold")
+            .style("fill", "#48bb78")
+            .text("A FAVOR");
+
+        gaugeGroup.append("text")
+            .attr("x", 0)
+            .attr("y", 60)
+            .attr("text-anchor", "middle")
+            .attr("class", "isotype-label")
+            .style("font-size", "14px")
+            .style("fill", "#718096")
+            .text("del cribado de cáncer de colon");
+
+        // Leyenda debajo del velocímetro
+        const legendGauge = svgGauge.append("g")
+            .attr("transform", `translate(${gaugeWidth / 2}, ${gaugeHeight - 60})`);
+
+        const legendSpacing = 150;
+
+        gaugeData.forEach((d, i) => {
+            const legendItem = legendGauge.append("g")
+                .attr("transform", `translate(${(i - 1) * legendSpacing}, 0)`);
+
+            legendItem.append("rect")
+                .attr("x", -50)
+                .attr("y", -10)
+                .attr("width", 20)
+                .attr("height", 20)
+                .attr("fill", d.color)
+                .attr("rx", 3);
+
+            legendItem.append("text")
+                .attr("x", -20)
+                .attr("y", 5)
+                .attr("class", "isotype-label")
+                .style("font-weight", "600")
+                .text(d.label);
+        });
+
+        // Adjuntar el velocímetro al contenedor
+        containerVumeter.node().appendChild(svgGauge.node());
+
+        // ============================================
+        // FUNCIÓN PARA DESCARGAR PDF
+        // ============================================
+        document.getElementById('downloadPdf').addEventListener('click', async function () {
+            const button = this;
+            button.disabled = true;
+            button.textContent = '⏳ Generando PDF...';
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                // Capturar el primer gráfico (pictograma)
+                const canvas1 = await html2canvas(document.getElementById('container'), {
+                    scale: 3,
+                    backgroundColor: '#ffffff'
+                });
+
+                // Capturar el segundo gráfico (velocímetro)
+                const canvas2 = await html2canvas(document.getElementById('container-vumeter'), {
+                    scale: 3,
+                    backgroundColor: '#ffffff'
+                });
+
+                // Dimensiones de la página A4
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const margin = 10;
+
+                // Agregar primer gráfico
+                const img1Width = pageWidth - (2 * margin);
+                const img1Height = (canvas1.height * img1Width) / canvas1.width;
+
+                pdf.addImage(
+                    canvas1.toDataURL('image/png'),
+                    'PNG',
+                    margin,
+                    margin,
+                    img1Width,
+                    img1Height
+                );
+
+                // Agregar nueva página para el segundo gráfico
+                pdf.addPage();
+
+                const img2Width = pageWidth - (2 * margin);
+                const img2Height = (canvas2.height * img2Width) / canvas2.width;
+
+                pdf.addImage(
+                    canvas2.toDataURL('image/png'),
+                    'PNG',
+                    margin,
+                    margin,
+                    img2Width,
+                    img2Height
+                );
+
+                // Descargar el PDF
+                pdf.save('graficos-pacientes.pdf');
+
+                button.disabled = false;
+                button.textContent = 'PDF Generado';
+
+                setTimeout(() => {
+                    button.textContent = 'Descargar gráficos en PDF';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                button.disabled = false;
+                button.textContent = '❌ Error al generar PDF';
+
+                setTimeout(() => {
+                    button.textContent = '📥 Descargar gráficos en PDF';
+                }, 2000);
+            }
+        });
     </script>
 </body>
 
