@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Like on Scroll</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* HEADER STYLES */
+        header {
+            position: sticky;
+            top: 0;
+            background: #2c3e50;
+            color: white;
+            padding: 16px;
+            z-index: 100;
+            opacity: 1;
+            transition: opacity 400ms ease-in-out;
+        }
+
+        header.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* FOOTER STYLES */
+        footer {
+            position: sticky;
+            bottom: 0;
+            background: #34495e;
+            color: white;
+            padding: 16px;
+            text-align: center;
+            z-index: 100;
+            opacity: 1;
+            transition: opacity 400ms ease-in-out;
+        }
+
+        footer.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* CONTENT STYLES */
+        main {
+            padding: 20px;
+        }
+
+        section {
+            background: white;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        section h2 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        section p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        /* MEDIA QUERY: Solo aplicar hide/show en móvil */
+        @media (min-width: 769px) {
+            header.hidden,
+            footer.hidden {
+                opacity: 1;
+                pointer-events: auto;
+            }
+        }
+
+        /* Debug info (opcional, para ver qué está pasando) */
+        .debug {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 200;
+        }
+
+        @media (min-width: 769px) {
+            .debug {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚀 Mi App</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2>Sección 1</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </section>
+
+        <section>
+            <h2>Sección 2</h2>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+            <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </section>
+
+        <section>
+            <h2>Sección 3</h2>
+            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+            <p>Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        </section>
+
+        <section>
+            <h2>Sección 4</h2>
+            <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores.</p>
+            <p>Eos qui ratione voluptatem sequi nesciunt neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
+        </section>
+
+        <section>
+            <h2>Sección 5</h2>
+            <p>Consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+            <p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam.</p>
+        </section>
+
+        <section>
+            <h2>Sección 6</h2>
+            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti.</p>
+            <p>Et harum quidem rerum facilis est et expedita distinctio nam libero tempore cum soluta nobis est eligendi optio.</p>
+        </section>
+
+        <section>
+            <h2>Sección 7</h2>
+            <p>Cumque nihil impedit quo minus id quod maxime placeat facere possimus omnis voluptas assumenda est.</p>
+            <p>Omnis dolor repellendus temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates.</p>
+        </section>
+
+        <section>
+            <h2>Sección 8</h2>
+            <p>Repudiandae sint molestiae non recusandae itaque earum rerum hic tenetur a sapiente delectus.</p>
+            <p>Ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy;XescoTools<strong>™</strong> 2025 </p>
+    </footer>
+
+    <div class="debug">
+        <div>Dirección: <span id="direction">-</span></div>
+        <div>ScrollY: <span id="scrolly">0</span></div>
+    </div>
+
+    <script>
+        // Detectar si estamos en móvil
+        const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+        // Referencias al DOM
+        const header = document.querySelector('header');
+        const footer = document.querySelector('footer');
+        const directionSpan = document.querySelector('#direction');
+        const scrollySpan = document.querySelector('#scrolly');
+
+        // Estado
+        let previousScrollY = 0;
+        let headerFooterVisible = true; // Estado: ¿están visibles?
+        let wasMobile = isMobile(); // Guardar el breakpoint anterior
+        const SCROLL_THRESHOLD = 10; // Píxeles antes de cambiar estado
+
+        const handleScroll = () => {
+            // Si no estamos en móvil, no hagas nada
+            if (!isMobile()) {
+                return;
+            }
+
+            const currentScrollY = window.scrollY;
+            const scrollDifference = currentScrollY - previousScrollY;
+
+            // Debug
+            scrollySpan.textContent = Math.round(currentScrollY);
+            directionSpan.textContent = scrollDifference > 0 ? '↓ Abajo' : '↑ Arriba';
+
+            // Detectar dirección y aplicar threshold
+            if (scrollDifference > SCROLL_THRESHOLD && headerFooterVisible) {
+                // Scrolleando hacia abajo MÁS de 10px
+                hideHeaderFooter();
+                headerFooterVisible = false;
+            } else if (scrollDifference < -SCROLL_THRESHOLD && !headerFooterVisible) {
+                // Scrolleando hacia arriba MÁS de 10px
+                showHeaderFooter();
+                headerFooterVisible = true;
+            }
+
+            // Actualizar posición anterior
+            previousScrollY = currentScrollY;
+        };
+
+        const hideHeaderFooter = () => {
+            header.classList.add('hidden');
+            footer.classList.add('hidden');
+        };
+
+        const showHeaderFooter = () => {
+            header.classList.remove('hidden');
+            footer.classList.remove('hidden');
+        };
+
+        // Event listener con throttling manual
+        let isThrottled = false;
+        window.addEventListener('scroll', () => {
+            if (!isThrottled) {
+                handleScroll();
+                isThrottled = true;
+                requestAnimationFrame(() => {
+                    isThrottled = false;
+                });
+            }
+        });
+
+        // Listener para cambios de breakpoint
+        window.addEventListener('resize', () => {
+            const isCurrentlyMobile = isMobile();
+
+            // Solo actuar si cambió el breakpoint
+            if (isCurrentlyMobile !== wasMobile) {
+                wasMobile = isCurrentlyMobile;
+                
+                // Si pasamos a desktop, mostrar header/footer
+                if (!isCurrentlyMobile) {
+                    showHeaderFooter();
+                    headerFooterVisible = true;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
