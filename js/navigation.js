@@ -36,7 +36,6 @@ document.querySelectorAll('.nav-btn').forEach(button => {
  *
 */
 
-
 // Detectar si estamos en móvil
 const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
 
