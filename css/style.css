@@ -44,6 +44,13 @@ header {
     top: 0;
     z-index: 100;
     padding: 0.5rem 0;
+    opacity: 1;
+    transition: opacity 400ms ease-in-out;
+}
+
+header.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 nav {
@@ -63,7 +70,7 @@ nav {
     flex-wrap: wrap;
     text-align: center;
 
-    @media (width <=800px) {
+    @media (width <=768px) {
         display: none;
     }
 }
@@ -77,15 +84,30 @@ nav {
     gap: 0.5rem;
 }
 
-.logo svg {
+/* El SVG del compás*/
+.logo svg:first-child {
     width: 30px;
     height: 30px;
+    @media (width <= 768px) {
+        display: none;
+    }
+}
+
+/* El SVG del caret-down*/
+.logo svg:nth-of-type(2) {
+    @media (width > 768px) {
+        display: none;
+    }
 }
 
 .nav-buttons {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
+        @media (width <= 768px) {
+        display: none;
+    }
+
 }
 
 .nav-btn {
@@ -180,12 +202,12 @@ p {
     margin-top: 1.5rem;
 }
 
-.welcome-hero h1{
+.welcome-hero h1 {
     color: white;
 }
 
 .welcome-hero p {
-    @media (width > 800px) {
+    @media (width > 768px) {
         display: none;
     }
 }
@@ -425,6 +447,11 @@ p {
     z-index: 1000;
 }
 
+.assistant-bubble.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
 .assistant-bubble:hover {
     transform: scale(1.1);
 }
@@ -517,10 +544,23 @@ p {
 /* Footer */
 footer {
     background: var(--bg-white);
-    padding: 2rem 0;
+    padding: 1rem 0;
     text-align: center;
     color: #718096;
     margin-top: auto;
+
+    @media (width <= 768px) {
+        position: sticky;
+        bottom: 0;
+        z-index: 100;
+        opacity: 1;
+        transition: opacity 400ms ease-in-out;
+    }
+}
+
+footer.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Animations */
@@ -539,5 +579,15 @@ footer {
 
     to {
         transform: translateX(0);
+    }
+}
+
+/* Solo aplicar hide/show en móvil */
+@media (min-width: 769px) {
+
+    header.hidden,
+    footer.hidden {
+        opacity: 1;
+        pointer-events: auto;
     }
 }
