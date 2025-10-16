@@ -110,3 +110,45 @@ window.addEventListener('resize', () => {
         }
     }
 });
+
+
+
+
+/* 
+ * Menú desplegable del logo
+ *
+*/ 
+
+document.addEventListener('DOMContentLoaded', function() {
+    const logoButton = document.getElementById('logoButton');
+    const logoDropdown = document.getElementById('logoDropdown');
+    
+    if (logoButton && logoDropdown) {
+        // Toggle del menú al hacer clic en el botón
+        logoButton.addEventListener('click', function(e) {
+            e.stopPropagation(); // Evita que el clic se propague
+            
+            const isExpanded = logoButton.getAttribute('aria-expanded') === 'true';
+            
+            // Cambiar estado
+            logoButton.setAttribute('aria-expanded', !isExpanded);
+            logoDropdown.classList.toggle('open');
+        });
+        
+        // Cerrar el menú al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!logoButton.contains(e.target) && !logoDropdown.contains(e.target)) {
+                logoButton.setAttribute('aria-expanded', 'false');
+                logoDropdown.classList.remove('open');
+            }
+        });
+        
+        // Cerrar con la tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                logoButton.setAttribute('aria-expanded', 'false');
+                logoDropdown.classList.remove('open');
+            }
+        });
+    }
+});
