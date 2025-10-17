@@ -89,7 +89,8 @@ nav {
 #logo-compass {
     width: 30px;
     height: 30px;
-    @media (width <= 768px) {
+
+    @media (width <=768px) {
         display: none;
     }
 }
@@ -115,6 +116,10 @@ nav {
     padding: 0.5rem;
     border-radius: 0.375rem;
     transition: background-color 0.2s;
+
+    @media (width > 768px) {
+        pointer-events: none;
+    }
 }
 
 .logo-button:hover {
@@ -141,18 +146,22 @@ nav {
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
-                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
     min-width: 200px;
     z-index: 100;
-    
+
+    @media (width >768px) {
+        display: none;
+    }
+
     /* Animación de apertura/cierre */
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                visibility 0.2s;
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.2s;
 }
 
 /* Estado abierto */
@@ -194,17 +203,18 @@ nav {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-        @media (width <= 768px) {
+
+    @media (width <=768px) {
         display: none;
     }
 
 }
 
 .nav-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.75rem;
     border: none;
-    background: var(--bg-light);
     color: var(--text-color);
+    background: var(--bg-light);
     border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.3s;
@@ -220,6 +230,14 @@ nav {
 .nav-btn.active {
     background: var(--primary-color);
     color: white;
+}
+
+.language {
+    color: var(--primary-color);
+    background: var(--bg-light);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+
 }
 
 /* Main Content */
@@ -639,7 +657,7 @@ footer {
     color: #718096;
     margin-top: auto;
 
-    @media (width <= 768px) {
+    @media (width <=768px) {
         position: sticky;
         bottom: 0;
         z-index: 100;

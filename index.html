@@ -37,11 +37,14 @@
                 <!-- Menú desplegable -->
                 <div class="logo-dropdown" id="logoDropdown">
                     <a href="#" class="dropdown-item">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" viewBox="0 0 24 24">
-
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Contorno principal de la casa -->
                             <path
                                 d="M2 9.54653C2 9.22086 2.15859 8.91558 2.42505 8.72834L11.4251 2.40402C11.77 2.1616 12.23 2.1616 12.5749 2.40402L21.5749 8.72834C21.8414 8.91558 22 9.22086 22 9.54653V21C22 21.5523 21.5523 22 21 22H3C2.44772 22 2 21.5523 2 21V9.54653Z"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <!-- Puerta -->
+                            <path d="M9 22V16C9 15.4477 9.44772 15 10 15H14C14.5523 15 15 15.4477 15 16V22"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <span>Inicio</span>
                     </a>
@@ -82,14 +85,28 @@
             </div>
             <div class="nav-buttons">
                 <button class="nav-btn active" data-page="inicio" aria-label="Inicio">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M12 3l9 8h-3v8h-5v-5H11v5H6v-8H3z" />
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Contorno principal de la casa -->
+                        <path
+                            d="M2 9.54653C2 9.22086 2.15859 8.91558 2.42505 8.72834L11.4251 2.40402C11.77 2.1616 12.23 2.1616 12.5749 2.40402L21.5749 8.72834C21.8414 8.91558 22 9.22086 22 9.54653V21C22 21.5523 21.5523 22 21 22H3C2.44772 22 2 21.5523 2 21V9.54653Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <!-- Puerta -->
+                        <path d="M9 22V16C9 15.4477 9.44772 15 10 15H14C14.5523 15 15 15.4477 15 16V22"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </button>
                 <button class="nav-btn" data-page="info">Información</button>
                 <button class="nav-btn" data-page="beneficios">Beneficios/Riesgos</button>
                 <button class="nav-btn" data-page="decision">Mi Decisión</button>
                 <button class="nav-btn" data-page="recursos">Recursos</button>
+            </div>
+            <div class="language">
+                <svg rpl="" fill="currentColor" height="20" icon-name="translate" viewBox="0 0 20 20" width="20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M19.016 17.572l-3.668-9.787a1.15 1.15 0 00-2.151 0L9.54 17.573a.964.964 0 001.81.66l.755-2.307h4.339l.763 2.31a.963.963 0 101.808-.664zm-6.32-3.3l1.576-4.5 1.59 4.5h-3.166zm-3.147-.608l.63-1.688a8.257 8.257 0 01-2.655-1.632 12.859 12.859 0 002.313-5.47h1.606a.9.9 0 000-1.8H7.2v-.761a.9.9 0 00-1.8 0v.761H1.16a.9.9 0 000 1.8h1.6a12.864 12.864 0 002.31 5.472 8.36 8.36 0 01-4.1 2.036.9.9 0 10.319 1.771 10.24 10.24 0 005.01-2.472c.948.86 2.051 1.532 3.25 1.98v.003zm-1.55-8.79a11.084 11.084 0 01-1.7 4.072 11.055 11.055 0 01-1.7-4.072H8z">
+                    </path>
+                </svg>
             </div>
         </nav>
         <div class="container">
