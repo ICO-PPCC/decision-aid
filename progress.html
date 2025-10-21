@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indicadores de Progreso - Navicolon</title>
+    <style>
+        :root {
+            --primary-color: #228EE5;
+            --secondary-color: #4E40E6;
+            --accent-color: #2753E3;
+            --danger-color: #f56565;
+            --text-color: #2d3748;
+            --bg-light: #f7fafc;
+            --bg-white: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--text-color);
+            background: var(--bg-light);
+        }
+
+        /* Header fijo con el indicador */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-white);
+            padding: 12px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        /* Toggle para comparar variantes (solo para demo) */
+        .variant-toggle {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--bg-white);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        .variant-toggle button {
+            padding: 8px 16px;
+            margin: 0 4px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-white);
+            color: var(--text-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .variant-toggle button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Contenedor de secciones con scroll */
+        .scroll-container {
+            margin-top: 60px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-content {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .section h2 {
+            font-size: 32px;
+            margin-bottom: 16px;
+            color: var(--primary-color);
+        }
+
+        .section p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+
+        /* VARIANTE A: Minimalista con énfasis en progreso */
+        .progress-indicator-a {
+            width: 130px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .progress-counter {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .progress-bar-container {
+            position: relative;
+            width: 100%;
+            height: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .progress-bar-bg {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--border-color);
+            border-radius: 2px;
+        }
+
+        .progress-bar-fill {
+            position: absolute;
+            height: 2px;
+            background: var(--primary-color);
+            border-radius: 2px;
+            transition: width 0.5s ease-out;
+        }
+
+        .progress-dots {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            z-index: 1;
+        }
+
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #cbd5e0;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.visited {
+            background: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .progress-dot.active {
+            background: var(--primary-color);
+            transform: scale(1.25);
+            box-shadow: 0 0 0 3px rgba(34, 142, 229, 0.2);
+        }
+
+        .progress-label {
+            font-size: 10px;
+            color: #718096;
+            text-align: center;
+            height: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* VARIANTE B: Balanceada (dots + contexto de progreso) */
+        .progress-indicator-b {
+            width: 130px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .progress-dots-large-container {
+            position: relative;
+            width: 100%;
+            height: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .progress-track {
+            position: absolute;
+            left: 5px;
+            right: 5px;
+            width: calc(100% - 10px);
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+        }
+
+        .progress-track-fill {
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 2px;
+            transition: width 0.5s ease-out;
+        }
+
+        .progress-dots-large {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            z-index: 1;
+        }
+
+        .progress-dot-large {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--bg-white);
+            border: 2px solid #cbd5e0;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot-large.visited {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .progress-dot-large.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: scale(1.2);
+            box-shadow: 0 0 0 3px rgba(34, 142, 229, 0.2);
+        }
+
+        .progress-percentage {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .progress-section-name {
+            font-size: 10px;
+            color: #718096;
+            text-align: center;
+            height: 12px;
+        }
+
+        /* Ocultar variantes */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header fijo -->
+    <header class="header">
+        <div class="logo">navicolon</div>
+
+        <!-- VARIANTE A -->
+        <div id="progressA" class="progress-indicator-a">
+            <div class="progress-counter">
+                <span id="counterA">1</span>/5
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-bg"></div>
+                <div id="barFillA" class="progress-bar-fill" style="width: 20%"></div>
+                <div class="progress-dots" id="dotsA">
+                    <!-- Se generarán dinámicamente -->
+                </div>
+            </div>
+            <div id="labelA" class="progress-label">Inicio</div>
+        </div>
+
+        <!-- VARIANTE B -->
+        <div id="progressB" class="progress-indicator-b hidden">
+            <div class="progress-dots-large-container">
+                <div class="progress-track">
+                    <div id="trackFillB" class="progress-track-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-dots-large" id="dotsB">
+                    <!-- Se generarán dinámicamente -->
+                </div>
+            </div>
+            <div class="progress-percentage">
+                <span id="percentageB">20</span>% completado
+            </div>
+            <div id="labelB" class="progress-section-name">Inicio</div>
+        </div>
+    </header>
+
+    <!-- Toggle para comparar variantes (solo para demo) -->
+    <div class="variant-toggle">
+        <div style="margin-bottom: 8px; font-size: 11px; font-weight: 500;">Comparar variantes:</div>
+        <button id="btnVariantA" class="active">Variante A</button>
+        <button id="btnVariantB">Variante B</button>
+    </div>
+
+    <!-- Contenedor con scroll -->
+    <div class="scroll-container" id="scrollContainer">
+        <!-- Sección 1: Inicio -->
+        <section class="section" id="section-inicio" data-section="0"
+            style="background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)">
+            <div class="section-content">
+                <h2>Inicio</h2>
+                <p>Bienvenido al programa de cribado de cáncer colorectal. Esta herramienta te ayudará a tomar una
+                    decisión informada.</p>
+            </div>
+        </section>
+
+        <!-- Sección 2: Información -->
+        <section class="section" id="section-informacion" data-section="1"
+            style="background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%)">
+            <div class="section-content">
+                <h2>Información</h2>
+                <p>El cáncer colorectal es uno de los cánceres más comunes. Conoce los datos básicos sobre la enfermedad
+                    y el cribado.</p>
+            </div>
+        </section>
+
+        <!-- Sección 3: Beneficios-Riesgos -->
+        <section class="section" id="section-beneficios" data-section="2"
+            style="background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%)">
+            <div class="section-content">
+                <h2>Beneficios y Riesgos</h2>
+                <p>Toda decisión médica implica sopesar beneficios y riesgos. Aquí te presentamos ambos de forma clara y
+                    equilibrada.</p>
+            </div>
+        </section>
+
+        <!-- Sección 4: Mi decisión -->
+        <section class="section" id="section-decision" data-section="3"
+            style="background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%)">
+            <div class="section-content">
+                <h2>Mi decisión</h2>
+                <p>Basándote en la información revisada, reflexiona sobre qué opción se alinea mejor con tus valores y
+                    preferencias.</p>
+            </div>
+        </section>
+
+        <!-- Sección 5: Recursos -->
+        <section class="section" id="section-recursos" data-section="4"
+            style="background: linear-gradient(135deg, #a0aec0 0%, #718096 100%)">
+            <div class="section-content">
+                <h2>Recursos</h2>
+                <p>Encuentra aquí recursos adicionales, preguntas frecuentes y contactos para resolver tus dudas.</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Configuración de secciones
+        const sections = [
+            { id: 'section-inicio', name: 'Inicio' },
+            { id: 'section-informacion', name: 'Información' },
+            { id: 'section-beneficios', name: 'Beneficios-Riesgos' },
+            { id: 'section-decision', name: 'Mi decisión' },
+            { id: 'section-recursos', name: 'Recursos' }
+        ];
+
+        let currentSection = 0;
+
+        // Generar dots para Variante A
+        const dotsAContainer = document.getElementById('dotsA');
+        sections.forEach((section, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'progress-dot';
+            dot.dataset.index = index;
+            if (index === 0) dot.classList.add('active', 'visited');
+            dotsAContainer.appendChild(dot);
+        });
+
+        // Generar dots para Variante B
+        const dotsBContainer = document.getElementById('dotsB');
+        sections.forEach((section, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'progress-dot-large';
+            dot.dataset.index = index;
+            if (index === 0) dot.classList.add('active', 'visited');
+            dotsBContainer.appendChild(dot);
+        });
+
+        // Función para actualizar el indicador de progreso
+        function updateProgress(sectionIndex) {
+            currentSection = sectionIndex;
+            const progress = ((sectionIndex + 1) / sections.length) * 100;
+            const trackProgress = sectionIndex === 0 ? 0 : ((sectionIndex) / (sections.length - 1)) * 100;
+
+            // Actualizar Variante A
+            document.getElementById('counterA').textContent = sectionIndex + 1;
+            document.getElementById('barFillA').style.width = progress + '%';
+            document.getElementById('labelA').textContent = sections[sectionIndex].name;
+
+            // Actualizar dots de Variante A
+            const dotsA = document.querySelectorAll('#dotsA .progress-dot');
+            dotsA.forEach((dot, index) => {
+                dot.classList.remove('active', 'visited');
+                if (index < sectionIndex) {
+                    dot.classList.add('visited');
+                } else if (index === sectionIndex) {
+                    dot.classList.add('active', 'visited');
+                }
+            });
+
+            // Actualizar Variante B
+            document.getElementById('percentageB').textContent = Math.round(progress);
+            document.getElementById('trackFillB').style.width = trackProgress + '%';
+            document.getElementById('labelB').textContent = sections[sectionIndex].name;
+
+            // Actualizar dots de Variante B
+            const dotsB = document.querySelectorAll('#dotsB .progress-dot-large');
+            dotsB.forEach((dot, index) => {
+                dot.classList.remove('active', 'visited');
+                if (index < sectionIndex) {
+                    dot.classList.add('visited');
+                } else if (index === sectionIndex) {
+                    dot.classList.add('active', 'visited');
+                }
+            });
+        }
+
+        // Configurar Intersection Observer
+        const observerOptions = {
+            root: document.getElementById('scrollContainer'),
+            // El rootMargin negativo crea una "zona de activación" en el centro del viewport
+            // -40% superior y -40% inferior = se activa cuando la sección está ±20% centrada
+            rootMargin: '-40% 0px -40% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const sectionIndex = parseInt(entry.target.dataset.section);
+                    updateProgress(sectionIndex);
+                }
+            });
+        }, observerOptions);
+
+        // Observar todas las secciones
+        sections.forEach(section => {
+            const element = document.getElementById(section.id);
+            if (element) {
+                observer.observe(element);
+            }
+        });
+
+        // Toggle entre variantes (solo para demo)
+        const progressA = document.getElementById('progressA');
+        const progressB = document.getElementById('progressB');
+        const btnVariantA = document.getElementById('btnVariantA');
+        const btnVariantB = document.getElementById('btnVariantB');
+
+        btnVariantA.addEventListener('click', () => {
+            progressA.classList.remove('hidden');
+            progressB.classList.add('hidden');
+            btnVariantA.classList.add('active');
+            btnVariantB.classList.remove('active');
+        });
+
+        btnVariantB.addEventListener('click', () => {
+            progressA.classList.add('hidden');
+            progressB.classList.remove('hidden');
+            btnVariantA.classList.remove('active');
+            btnVariantB.classList.add('active');
+        });
+
+        // Limpiar observer al cerrar/salir
+        window.addEventListener('beforeunload', () => {
+            observer.disconnect();
+        });
+    </script>
+</body>
+
+</html>
