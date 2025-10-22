@@ -195,57 +195,55 @@
         </div>
     </header>
 
-    <!-- Contenedor con scroll -->
-    <div class="scroll-container" id="scrollContainer">
-        <!-- Sección 1: Inicio -->
-        <section class="section" id="section-inicio" data-section="0"
-            style="background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)">
-            <div class="section-content">
-                <h2>Inicio</h2>
-                <p>Bienvenido al programa de cribado de cáncer colorectal. Esta herramienta te ayudará a tomar una
-                    decisión informada.</p>
-            </div>
-        </section>
+    <!-- Sección 1: Inicio -->
+    <section class="section" id="section-inicio" data-section="0"
+        style="background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)">
+        <div class="section-content">
+            <h2>Inicio</h2>
+            <p>Bienvenido al programa de cribado de cáncer colorectal. Esta herramienta te ayudará a tomar una
+                decisión informada.</p>
+        </div>
+    </section>
 
-        <!-- Sección 2: Información -->
-        <section class="section" id="section-informacion" data-section="1"
-            style="background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%)">
-            <div class="section-content">
-                <h2>Información</h2>
-                <p>El cáncer colorectal es uno de los cánceres más comunes. Conoce los datos básicos sobre la enfermedad
-                    y el cribado.</p>
-            </div>
-        </section>
+    <!-- Sección 2: Información -->
+    <section class="section" id="section-informacion" data-section="1"
+        style="background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%)">
+        <div class="section-content">
+            <h2>Información</h2>
+            <p>El cáncer colorectal es uno de los cánceres más comunes. Conoce los datos básicos sobre la enfermedad
+                y el cribado.</p>
+        </div>
+    </section>
 
-        <!-- Sección 3: Beneficios-Riesgos -->
-        <section class="section" id="section-beneficios" data-section="2"
-            style="background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%)">
-            <div class="section-content">
-                <h2>Beneficios y Riesgos</h2>
-                <p>Toda decisión médica implica sopesar beneficios y riesgos. Aquí te presentamos ambos de forma clara y
-                    equilibrada.</p>
-            </div>
-        </section>
+    <!-- Sección 3: Beneficios-Riesgos -->
+    <section class="section" id="section-beneficios" data-section="2"
+        style="background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%)">
+        <div class="section-content">
+            <h2>Beneficios y Riesgos</h2>
+            <p>Toda decisión médica implica sopesar beneficios y riesgos. Aquí te presentamos ambos de forma clara y
+                equilibrada.</p>
+        </div>
+    </section>
 
-        <!-- Sección 4: Mi decisión -->
-        <section class="section" id="section-decision" data-section="3"
-            style="background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%)">
-            <div class="section-content">
-                <h2>Mi decisión</h2>
-                <p>Basándote en la información revisada, reflexiona sobre qué opción se alinea mejor con tus valores y
-                    preferencias.</p>
-            </div>
-        </section>
+    <!-- Sección 4: Mi decisión -->
+    <section class="section" id="section-decision" data-section="3"
+        style="background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%)">
+        <div class="section-content">
+            <h2>Mi decisión</h2>
+            <p>Basándote en la información revisada, reflexiona sobre qué opción se alinea mejor con tus valores y
+                preferencias.</p>
+        </div>
+    </section>
 
-        <!-- Sección 5: Recursos -->
-        <section class="section" id="section-recursos" data-section="4"
-            style="background: linear-gradient(135deg, #a0aec0 0%, #718096 100%)">
-            <div class="section-content">
-                <h2>Recursos</h2>
-                <p>Encuentra aquí recursos adicionales, preguntas frecuentes y contactos para resolver tus dudas.</p>
-            </div>
-        </section>
-    </div>
+    <!-- Sección 5: Recursos -->
+    <section class="section" id="section-recursos" data-section="4"
+        style="background: linear-gradient(135deg, #a0aec0 0%, #718096 100%)">
+        <div class="section-content">
+            <h2>Recursos</h2>
+            <p>Encuentra aquí recursos adicionales, preguntas frecuentes y contactos para resolver tus dudas.</p>
+        </div>
+    </section>
+
 
     <script>
         // Configuración de secciones
@@ -265,7 +263,9 @@
             const dot = document.createElement('div');
             dot.className = 'progress-dot';
             dot.dataset.index = index;
-            if (index === 0) dot.classList.add('active', 'visited');
+            if (index === 0) {
+                dot.classList.add('active', 'visited');
+            }
             dotsContainer.appendChild(dot);
         });
 
@@ -280,7 +280,7 @@
             document.getElementById('barFill').style.width = progress + '%';
             document.getElementById('label').textContent = sections[sectionIndex].name;
 
-            // Actualizar
+            // Actualizar los puntos. Ver qué hacer cuando salten de página por menú
             const dots = document.querySelectorAll('#dots .progress-dot');
             dots.forEach((dot, index) => {
                 dot.classList.remove('active', 'visited');
@@ -294,7 +294,7 @@
 
         // Configurar Intersection Observer
         const observerOptions = {
-            root: document.getElementById('scrollContainer'),
+            root: null,
             // El rootMargin negativo crea una "zona de activación" en el centro del viewport
             // -40% superior y -40% inferior = se activa cuando la sección está ±20% centrada
             rootMargin: '-40% 0px -40% 0px',
@@ -303,6 +303,14 @@
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
+
+                console.log({
+                    section: entry.target.id,
+                    isVisible: entry.isIntersecting,
+                    ratio: entry.intersectionRatio,
+                    time: entry.time
+                });
+
                 if (entry.isIntersecting) {
                     const sectionIndex = parseInt(entry.target.dataset.section);
                     updateProgress(sectionIndex);
