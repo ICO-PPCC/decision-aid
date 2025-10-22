@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPA con Intersection Observer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Contenedor de secciones */
+    .section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: bold;
+      color: white;
+      position: relative;
+      
+      /* Clave: La transición suave */
+      opacity: 0;
+      transition: opacity 0.6s ease-in-out;
+    }
+
+    /* Cuando una sección está visible */
+    .section.visible {
+      opacity: 1;
+    }
+
+    /* Colores diferentes para cada sección */
+    .section:nth-child(1) { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .section:nth-child(2) { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .section:nth-child(3) { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .section:nth-child(4) { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .section:nth-child(5) { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+    /* Indicador de sección actual */
+    .nav-dots {
+      position: fixed;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .nav-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .nav-dot.active {
+      background: white;
+      transform: scale(1.3);
+    }
+
+    /* Info de debug */
+    .debug-info {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: monospace;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <!-- Secciones -->
+  <section class="section visible" data-section="1">
+    Sección 1
+  </section>
+  <section class="section" data-section="2">
+    Sección 2
+  </section>
+  <section class="section" data-section="3">
+    Sección 3
+  </section>
+  <section class="section" data-section="4">
+    Sección 4
+  </section>
+  <section class="section" data-section="5">
+    Sección 5
+  </section>
+
+  <!-- Navegación con puntos -->
+  <div class="nav-dots">
+    <div class="nav-dot active" data-target="1"></div>
+    <div class="nav-dot" data-target="2"></div>
+    <div class="nav-dot" data-target="3"></div>
+    <div class="nav-dot" data-target="4"></div>
+    <div class="nav-dot" data-target="5"></div>
+  </div>
+
+  <!-- Info de debug -->
+  <div class="debug-info">
+    <div>Sección actual: <span id="current-section">1</span></div>
+    <div>Dirección scroll: <span id="scroll-direction">-</span></div>
+    <div>Última posición: <span id="last-scroll">0</span></div>
+  </div>
+
+  <script>
+    // ====== VARIABLES DE ESTADO ======
+    let currentSection = 1; // La sección que está visible ahora
+    let lastScrollY = window.scrollY; // Para detectar dirección del scroll
+    let scrollDirection = 'down'; // 'up' o 'down'
+
+    // ====== REFERENCIAS AL DOM ======
+    const sections = document.querySelectorAll('.section');
+    const navDots = document.querySelectorAll('.nav-dot');
+    
+    // Referencias para debug
+    const debugCurrentSection = document.getElementById('current-section');
+    const debugScrollDirection = document.getElementById('scroll-direction');
+    const debugLastScroll = document.getElementById('last-scroll');
+
+    // ====== FUNCIÓN PARA CAMBIAR DE SECCIÓN ======
+    function changeSection(newSection, direction) {
+      // Ocultar todas las secciones
+      sections.forEach(section => {
+        section.classList.remove('visible');
+      });
+      
+      // Mostrar la nueva sección
+      const targetSection = sections[newSection - 1];
+      targetSection.classList.add('visible');
+      
+      // Scroll automático según la dirección
+      if (direction === 'down') {
+        // Al bajar: alinear el top de la sección con el top del viewport
+        targetSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      } else if (direction === 'up') {
+        // Al subir: alinear el bottom de la sección con el bottom del viewport
+        targetSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'end'
+        });
+      }
+      
+      // Actualizar la sección actual
+      currentSection = newSection;
+      
+      // Actualizar los puntos de navegación
+      updateNavDots(newSection);
+      
+      // Actualizar debug
+      debugCurrentSection.textContent = newSection;
+    }
+
+    // ====== ACTUALIZAR PUNTOS DE NAVEGACIÓN ======
+    function updateNavDots(activeSection) {
+      navDots.forEach(dot => {
+        dot.classList.remove('active');
+      });
+      navDots[activeSection - 1].classList.add('active');
+    }
+
+    // ====== DETECTAR DIRECCIÓN DEL SCROLL ======
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+      
+      // Determinar dirección
+      if (currentScrollY > lastScrollY) {
+        scrollDirection = 'down';
+      } else if (currentScrollY < lastScrollY) {
+        scrollDirection = 'up';
+      }
+      
+      lastScrollY = currentScrollY;
+      
+      // Actualizar debug
+      debugScrollDirection.textContent = scrollDirection;
+      debugLastScroll.textContent = Math.round(currentScrollY);
+    });
+
+    // ====== CONFIGURAR INTERSECTION OBSERVER ======
+    const observerOptions = {
+      // threshold: 0.2 significa que se activa cuando el 20% del elemento es visible
+      threshold: 0.2,
+      // root: null significa que usamos el viewport como referencia
+      root: null,
+      // rootMargin: '0px' no añade márgenes extra
+      rootMargin: '0px'
+    };
+
+    // Callback que se ejecuta cada vez que un elemento cruza el threshold
+    const observerCallback = (entries) => {
+      entries.forEach(entry => {
+        // entry.isIntersecting = true cuando el elemento está visible al 20% o más
+        if (entry.isIntersecting) {
+          // Obtener el número de sección del atributo data-section
+          const sectionNumber = parseInt(entry.target.dataset.section);
+          
+          // LÓGICA PRINCIPAL: Decidir si cambiamos de sección
+          
+          // Si vamos hacia abajo y la sección observada es la siguiente
+          if (scrollDirection === 'down' && sectionNumber > currentSection) {
+            changeSection(sectionNumber, 'down');
+          }
+          
+          // Si vamos hacia arriba y la sección observada es la anterior
+          if (scrollDirection === 'up' && sectionNumber < currentSection) {
+            changeSection(sectionNumber, 'up');
+          }
+        }
+      });
+    };
+
+    // Crear el observer con las opciones y el callback
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    // Observar todas las secciones
+    sections.forEach(section => {
+      observer.observe(section);
+    });
+
+    // ====== NAVEGACIÓN CON CLICKS EN LOS PUNTOS ======
+    navDots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const targetSection = parseInt(dot.dataset.target);
+        const targetElement = sections[targetSection - 1];
+        
+        // Scroll suave hasta la sección
+        targetElement.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+        
+        // Cambiar a esa sección inmediatamente
+        changeSection(targetSection);
+      });
+    });
+  </script>
+</body>
+</html>
