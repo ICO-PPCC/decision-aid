@@ -50,35 +50,6 @@
             font-size: 16px;
         }
 
-        /* Toggle para comparar variantes (solo para demo) */
-        .variant-toggle {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: var(--bg-white);
-            padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 1001;
-        }
-
-        .variant-toggle button {
-            padding: 8px 16px;
-            margin: 0 4px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-white);
-            color: var(--text-color);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-
-        .variant-toggle button.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
 
         /* Contenedor de secciones con scroll */
         .scroll-container {
@@ -115,7 +86,7 @@
         }
 
         /* VARIANTE A: Minimalista con énfasis en progreso */
-        .progress-indicator-a {
+        .progress-indicator {
             width: 130px;
             display: flex;
             flex-direction: column;
@@ -190,75 +161,6 @@
             white-space: nowrap;
         }
 
-        /* VARIANTE B: Balanceada (dots + contexto de progreso) */
-        .progress-indicator-b {
-            width: 130px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .progress-dots-large-container {
-            position: relative;
-            width: 100%;
-            height: 12px;
-            display: flex;
-            align-items: center;
-        }
-
-        .progress-track {
-            position: absolute;
-            left: 5px;
-            right: 5px;
-            width: calc(100% - 10px);
-            height: 4px;
-            background: var(--border-color);
-            border-radius: 2px;
-        }
-
-        .progress-track-fill {
-            height: 4px;
-            background: var(--primary-color);
-            border-radius: 2px;
-            transition: width 0.5s ease-out;
-        }
-
-        .progress-dots-large {
-            position: relative;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            z-index: 1;
-        }
-
-        .progress-dot-large {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--bg-white);
-            border: 2px solid #cbd5e0;
-            transition: all 0.3s ease;
-        }
-
-        .progress-dot-large.visited {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .progress-dot-large.active {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-            transform: scale(1.2);
-            box-shadow: 0 0 0 3px rgba(34, 142, 229, 0.2);
-        }
-
-        .progress-percentage {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
         .progress-section-name {
             font-size: 10px;
             color: #718096;
@@ -278,44 +180,20 @@
     <header class="header">
         <div class="logo">navicolon</div>
 
-        <!-- VARIANTE A -->
-        <div id="progressA" class="progress-indicator-a">
+        <div id="progress" class="progress-indicator">
             <div class="progress-counter">
-                <span id="counterA">1</span>/5
+                <span id="counter">1</span>/5
             </div>
             <div class="progress-bar-container">
                 <div class="progress-bar-bg"></div>
-                <div id="barFillA" class="progress-bar-fill" style="width: 20%"></div>
-                <div class="progress-dots" id="dotsA">
+                <div id="barFill" class="progress-bar-fill" style="width: 20%"></div>
+                <div class="progress-dots" id="dots">
                     <!-- Se generarán dinámicamente -->
                 </div>
             </div>
-            <div id="labelA" class="progress-label">Inicio</div>
-        </div>
-
-        <!-- VARIANTE B -->
-        <div id="progressB" class="progress-indicator-b hidden">
-            <div class="progress-dots-large-container">
-                <div class="progress-track">
-                    <div id="trackFillB" class="progress-track-fill" style="width: 0%"></div>
-                </div>
-                <div class="progress-dots-large" id="dotsB">
-                    <!-- Se generarán dinámicamente -->
-                </div>
-            </div>
-            <div class="progress-percentage">
-                <span id="percentageB">20</span>% completado
-            </div>
-            <div id="labelB" class="progress-section-name">Inicio</div>
+            <div id="label" class="progress-label">Inicio</div>
         </div>
     </header>
-
-    <!-- Toggle para comparar variantes (solo para demo) -->
-    <div class="variant-toggle">
-        <div style="margin-bottom: 8px; font-size: 11px; font-weight: 500;">Comparar variantes:</div>
-        <button id="btnVariantA" class="active">Variante A</button>
-        <button id="btnVariantB">Variante B</button>
-    </div>
 
     <!-- Contenedor con scroll -->
     <div class="scroll-container" id="scrollContainer">
@@ -381,24 +259,14 @@
 
         let currentSection = 0;
 
-        // Generar dots para Variante A
-        const dotsAContainer = document.getElementById('dotsA');
+        // Generar dots
+        const dotsContainer = document.getElementById('dots');
         sections.forEach((section, index) => {
             const dot = document.createElement('div');
             dot.className = 'progress-dot';
             dot.dataset.index = index;
             if (index === 0) dot.classList.add('active', 'visited');
-            dotsAContainer.appendChild(dot);
-        });
-
-        // Generar dots para Variante B
-        const dotsBContainer = document.getElementById('dotsB');
-        sections.forEach((section, index) => {
-            const dot = document.createElement('div');
-            dot.className = 'progress-dot-large';
-            dot.dataset.index = index;
-            if (index === 0) dot.classList.add('active', 'visited');
-            dotsBContainer.appendChild(dot);
+            dotsContainer.appendChild(dot);
         });
 
         // Función para actualizar el indicador de progreso
@@ -407,30 +275,14 @@
             const progress = ((sectionIndex + 1) / sections.length) * 100;
             const trackProgress = sectionIndex === 0 ? 0 : ((sectionIndex) / (sections.length - 1)) * 100;
 
-            // Actualizar Variante A
-            document.getElementById('counterA').textContent = sectionIndex + 1;
-            document.getElementById('barFillA').style.width = progress + '%';
-            document.getElementById('labelA').textContent = sections[sectionIndex].name;
+            // Actualizar
+            document.getElementById('counter').textContent = sectionIndex + 1;
+            document.getElementById('barFill').style.width = progress + '%';
+            document.getElementById('label').textContent = sections[sectionIndex].name;
 
-            // Actualizar dots de Variante A
-            const dotsA = document.querySelectorAll('#dotsA .progress-dot');
-            dotsA.forEach((dot, index) => {
-                dot.classList.remove('active', 'visited');
-                if (index < sectionIndex) {
-                    dot.classList.add('visited');
-                } else if (index === sectionIndex) {
-                    dot.classList.add('active', 'visited');
-                }
-            });
-
-            // Actualizar Variante B
-            document.getElementById('percentageB').textContent = Math.round(progress);
-            document.getElementById('trackFillB').style.width = trackProgress + '%';
-            document.getElementById('labelB').textContent = sections[sectionIndex].name;
-
-            // Actualizar dots de Variante B
-            const dotsB = document.querySelectorAll('#dotsB .progress-dot-large');
-            dotsB.forEach((dot, index) => {
+            // Actualizar
+            const dots = document.querySelectorAll('#dots .progress-dot');
+            dots.forEach((dot, index) => {
                 dot.classList.remove('active', 'visited');
                 if (index < sectionIndex) {
                     dot.classList.add('visited');
@@ -464,26 +316,6 @@
             if (element) {
                 observer.observe(element);
             }
-        });
-
-        // Toggle entre variantes (solo para demo)
-        const progressA = document.getElementById('progressA');
-        const progressB = document.getElementById('progressB');
-        const btnVariantA = document.getElementById('btnVariantA');
-        const btnVariantB = document.getElementById('btnVariantB');
-
-        btnVariantA.addEventListener('click', () => {
-            progressA.classList.remove('hidden');
-            progressB.classList.add('hidden');
-            btnVariantA.classList.add('active');
-            btnVariantB.classList.remove('active');
-        });
-
-        btnVariantB.addEventListener('click', () => {
-            progressA.classList.add('hidden');
-            progressB.classList.remove('hidden');
-            btnVariantA.classList.remove('active');
-            btnVariantB.classList.add('active');
         });
 
         // Limpiar observer al cerrar/salir
