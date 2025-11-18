@@ -11,7 +11,6 @@ El proyecto contiene los siguientes archivos y carpetas:
 - `js/main.js`: Punto de entrada para la funcionalidad de JavaScript, que inicializa la aplicación y gestiona la navegación entre páginas.
 - `js/navigation.js`: Funciones para manejar la navegación entre diferentes secciones de la SPA.
 - `js/quiz.js`: Lógica para la sección de cuestionarios, que maneja la entrada del usuario y muestra resultados.
-- `js/assistant.js`: Gestión de la funcionalidad del asistente virtual, que procesa interacciones y proporciona respuestas.
 
 ## Instrucciones de Configuración
 

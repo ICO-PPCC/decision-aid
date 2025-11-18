@@ -112,8 +112,6 @@ window.addEventListener('resize', () => {
 });
 
 
-
-
 /* 
  * Menú desplegable del logo
  *
