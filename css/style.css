@@ -12,6 +12,7 @@
     --accent-color: #2753E3;
     --danger-color: #f56565;
     --text-color: #2d3748;
+    --footer-text-color: #797777;
     --bg-light: #f7fafc;
     --bg-white: #ffffff;
     --border-color: #e2e8f0;
@@ -577,7 +578,7 @@ p {
 /* Footer */
 footer {
     background: var(--bg-white);
-    padding: 1rem 0;
+    padding: 1.5rem 0;
     text-align: center;
     color: #718096;
     margin-top: auto;
@@ -588,12 +589,73 @@ footer {
         z-index: 100;
         opacity: 1;
         transition: opacity 400ms ease-in-out;
+        padding: 1rem 0;
     }
 }
 
 footer.hidden {
     opacity: 0;
     pointer-events: none;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    background: var(--bg-white);
+}
+
+.footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: var(--footer-text-color);
+    background: var(--bg-white);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.footer-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);    
+}
+
+.footer-link svg {
+    flex-shrink: 0;
+}
+
+/* Mobile footer styles */
+@media (width <=768px) {
+    .footer-links {
+        justify-content: space-evenly;
+        gap: 0;
+        width: 100%;
+    }
+
+    .footer-link {
+        padding: 0.5rem;
+        border: none;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .footer-link span {
+        display: none;
+    }
+
+    .footer-link:hover {
+        transform: none;
+        box-shadow: none;
+        background: var(--bg-light);
+    }
 }
 
 /* Animations */
