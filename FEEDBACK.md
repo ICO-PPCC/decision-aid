@@ -8,7 +8,7 @@
 
 ### MÒBIL
 
-- Les icones del footer es veuen molt petites
+- Les icones del footer es veuen molt petites [✅]
 - Un cop cliques a una de les icones del footer no es pot tornar a la pàgina d'inici
 - L'icona d'idiomes hauria de adreçar-te a una pàgina nova d'idiomes/instruccions. D'altra banda valorar opcions d'aquesta icona, sobretot si es pot posar una paraula que "expliqui" la icona: **Idioma** --> Canviar per Language
 - El text lorem ipsum de cadascun dels pasos del subapartat *¿Cómo funcional el programa de cribado?* no hauria d'excedir els 300 caràcters

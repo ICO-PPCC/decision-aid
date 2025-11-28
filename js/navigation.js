@@ -21,13 +21,15 @@ function navigateTo(page) {
             btn.classList.add('active');
         }
     });
+
+    // Desplazamiento suave al principio de la página
+    globalThis.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 }
 
 document.querySelectorAll('.nav-btn').forEach(button => {
     button.addEventListener('click', () => {
         const page = button.getAttribute('data-page');
-        navigateTo(page);
-        globalThis.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        navigateTo(page);        
     });
 });
 
