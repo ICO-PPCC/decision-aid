@@ -47,3 +47,7 @@ Todos ellos con su timestamp
 #### Para el repositorio donde lo publiquemos, Github o institucional
 
 1. Cuantas personas lo han descargado.
+
+### Desarrollo de métricas
+
+Para presentar la info de la tarea 7.5 nos podemos inspirar en: https://ebccp.cancercontrol.cancer.gov/programDetails.do?programId=22719602
