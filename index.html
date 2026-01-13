@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>navicolon - Decisión Informada sobre Cribado de Cáncer Colorrectal</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- D3.js and Config must be loaded before main scripts -->
+    <script src="js/vendors/d3.v7.js" defer></script>
+    <script src="js/config.js" defer></script>
+    <script src="js/charts.js" defer></script>
     <script src="js/main.js" defer></script>
     <script src="js/navigation.js" defer></script>
     <script src="js/quiz.js" defer></script>
@@ -279,19 +283,28 @@
         <!-- Página de Beneficios y Riesgos -->
         <div id="beneficios" class="page">
             <div class="card">
-                <h1>Beneficios y Riesgos del Cribado</h1>
+                <h1>Impacto Visual de tu Decisión</h1>
                 <p>Es importante conocer tanto los beneficios como los posibles riesgos para tomar una decisión
-                    informada.</p>
+                    informada. Los datos son anónimos, pero tu decisión importa. Así se compara tu perfil de riesgo:</p>
+
+                <!-- Visualization Containers -->
+                <div id="isotype-chart" style="margin: 20px 0; min-height: 280px; background: #f7fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <p style="color: #a0aec0;">Cargando visualización de riesgos...</p>
+                </div>
+                <div id="gauge-chart" style="margin: 20px 0;"></div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
                     <div style="background: #c6f6d5; padding: 1.5rem; border-radius: 0.5rem;">
-                        <p>Beneficio 1</p>
+                        <h3 style="color: #2f855a; margin-bottom: 0.5rem;">Beneficios</h3>
+                        <p>Detección temprana aumenta significativamente las tasas de supervivencia.</p>
                     </div>
                     <div style="background: #fed7d7; padding: 1.5rem; border-radius: 0.5rem;">
-                        <p>Riesgo 1</p>
+                        <h3 style="color: #c53030; margin-bottom: 0.5rem;">Riesgos</h3>
+                        <p>Posibles falsos positivos que pueden generar ansiedad innecesaria.</p>
                     </div>
                 </div>
             </div>
+
 
             <div class="card">
                 <h2>Datos importantes</h2>
@@ -321,14 +334,6 @@
 
                     <div class="quiz-question">
                         <p>Pregunta 1</p>
-                    </div>
-
-                    <div class="quiz-question">
-                        <p>Pregunta 2</p>
-                    </div>
-
-                    <div class="quiz-question">
-                        <p>Pregunta 3</p>
                     </div>
 
                     <button class="btn btn-primary" onclick="showDecisionResult()">Ver mi perfil de decisión</button>

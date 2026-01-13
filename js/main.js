@@ -8,38 +8,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initApp() {
     // Show the initial page
-    navigateTo('inicio');
+    if (typeof navigateTo === 'function') {
+        navigateTo('inicio');
+    }
 
     // Set up event listeners for navigation buttons
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(button => {
         button.addEventListener('click', () => {
             const page = button.getAttribute('data-page');
-            navigateTo(page);
+            if (typeof navigateTo === 'function') {
+                navigateTo(page);
+            }
         });
     });
 }
 
-function navigateTo(page) {
-    // Hide all pages
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => p.classList.remove('active'));
-
-    // Show the selected page
-    const selectedPage = document.getElementById(page);
-    if (selectedPage) {
-        selectedPage.classList.add('active');
-    }
-
-    // Update active navigation button
-    const navButtons = document.querySelectorAll('.nav-btn');
-    navButtons.forEach(button => {
-        button.classList.remove('active');
-        if (button.getAttribute('data-page') === page) {
-            button.classList.add('active');
-        }
-    });
-}
 
 
 let currentStep = 0;

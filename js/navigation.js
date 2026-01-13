@@ -22,8 +22,20 @@ function navigateTo(page) {
         }
     });
 
+
     // Desplazamiento suave al principio de la página
     globalThis.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+
+    // Trigger chart initialization if navigating to 'beneficios'
+    if (page === 'beneficios') {
+        console.log("Navegando a beneficios (desde navigation.js)...");
+        if (typeof initCharts === 'function') {
+            // Small delay to ensure DOM is ready and transition is active
+            setTimeout(initCharts, 200);
+        } else {
+            console.warn("initCharts no definido");
+        }
+    }
 }
 
 document.querySelectorAll('.nav-btn').forEach(button => {

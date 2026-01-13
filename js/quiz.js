@@ -1,25 +1,11 @@
 // This file contains the logic for the quiz section of the application. 
 // It handles user input, processes quiz questions, and displays results based on user responses.
 
-const quizQuestions = [
-    {
-        question: "¿Cuál es tu edad?",
-        options: ["Menos de 50", "50 o más"],
-        answer: null
-    },
-    {
-        question: "¿Tienes antecedentes familiares de cáncer colorrectal?",
-        options: ["Sí", "No"],
-        answer: null
-    },
-    {
-        question: "¿Has realizado un cribado de cáncer colorrectal anteriormente?",
-        options: ["Sí", "No"],
-        answer: null
-    }
-];
+// Load questions from global config or fallback to array
+const quizQuestions = window.appConfig ? window.appConfig.quizQuestions : [];
 
 let currentQuestionIndex = 0;
+
 
 function showQuestion() {
     const questionContainer = document.querySelector('.quiz-question');

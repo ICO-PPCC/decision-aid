@@ -27,3 +27,23 @@ El proyecto contiene los siguientes archivos y carpetas:
 ## Contribuciones
 
 Las contribuciones son bienvenidas. Si deseas contribuir, por favor abre un issue o envía un pull request.
+
+## ToDo
+
+### Desarrollo de métricas
+
+Todos ellos con su timestamp
+
+#### Para la aplicación
+
+1. Número de accesos a la herramienta
+2. Número de acceso que han pasado por todas las secciones.
+3. Accesos que han generado el informe en PDF.
+4. Accesos que están de acuerdo con el resultado.
+5. Tipo de resultado por acceso de los (n [3] posibles).
+6. Grado de aceptación del resultado.
+7. Duración del acceso.
+
+#### Para el repositorio donde lo publiquemos, Github o institucional
+
+1. Cuantas personas lo han descargado.
