@@ -4,7 +4,7 @@
 
 ### General
 
-- Treure branding imaging "NAVICOLON" --> Canviar per Decision Aid
+- Treure branding imaging "NAVICOLON" --> Canviar per Decision Aid [✅]
 
 ### MÒBIL
 
