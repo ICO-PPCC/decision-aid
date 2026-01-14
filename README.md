@@ -1,6 +1,6 @@
-# NAVICOLON - Decisión Informada sobre Cribado de Cáncer Colorrectal
+# Decision-aid - Decisión Informada sobre Cribado de Cáncer Colorrectal
 
-NAVICOLON es una aplicación web de una sola página (SPA) diseñada para ayudar a los usuarios a tomar decisiones informadas sobre el cribado de cáncer colorrectal. La aplicación proporciona información sobre el cáncer colorrectal, los beneficios y riesgos del cribado, y permite a los usuarios reflexionar sobre su decisión personal.
+Decision-aid es una aplicación web de una sola página (SPA) diseñada para ayudar a los usuarios a tomar decisiones informadas sobre el cribado de cáncer colorrectal. La aplicación proporciona información sobre el cáncer colorrectal, los beneficios y riesgos del cribado, y permite a los usuarios reflexionar sobre su decisión personal.
 
 ## Estructura del Proyecto
 
