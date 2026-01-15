@@ -28,7 +28,6 @@ function navigateTo(page) {
 
     // Trigger chart initialization if navigating to 'beneficios'
     if (page === 'beneficios') {
-        console.log("Navegando a beneficios (desde navigation.js)...");
         if (typeof initCharts === 'function') {
             // Small delay to ensure DOM is ready and transition is active
             setTimeout(initCharts, 200);
@@ -145,6 +144,23 @@ document.addEventListener('DOMContentLoaded', function() {
             // Cambiar estado
             logoButton.setAttribute('aria-expanded', !isExpanded);
             logoDropdown.classList.toggle('open');
+        });
+
+        // Lógica para los enlaces del menú móvil
+        const dropdownLinks = logoDropdown.querySelectorAll('.dropdown-item');
+
+        dropdownLinks.forEach(link => {
+            link.addEventListener('click', function(e){
+                e.preventDefault(); // Bloqueamos salto de ancla (por defecto)
+                const targetId = this.getAttribute('href').substring(1);
+                if (typeof navigateTo === 'function'){
+                    navigateTo(targetId);
+                }
+
+                // Cerramos menú desplegable
+                logoButton.setAttribute('aria-expanded', 'false');
+                logoDropdown.classList.remove('open');
+            });
         });
         
         // Cerrar el menú al hacer clic fuera
