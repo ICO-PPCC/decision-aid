@@ -40,7 +40,7 @@ function navigateTo(page) {
 document.querySelectorAll('.nav-btn').forEach(button => {
     button.addEventListener('click', () => {
         const page = button.getAttribute('data-page');
-        navigateTo(page);        
+        navigateTo(page);
     });
 });
 
@@ -63,27 +63,34 @@ let wasMobile = isMobile(); // Guardar el breakpoint anterior
 const SCROLL_THRESHOLD = 10; // Píxeles antes de cambiar estado
 
 const handleScroll = () => {
-    // Si no estamos en móvil, no hagas nada
-    if (!isMobile()) {
-        return;
+    // Si estamos en móvil
+    if (isMobile()) {
+        const currentScrollY = window.scrollY;
+        const scrollDifference = currentScrollY - previousScrollY;
+
+        // Detectar dirección y aplicar threshold
+        if (scrollDifference > SCROLL_THRESHOLD && headerFooterVisible) {
+            // Scrolleando hacia abajo MÁS de 10px
+            hideHeaderFooter();
+            headerFooterVisible = false;
+        } else if (scrollDifference < -SCROLL_THRESHOLD && !headerFooterVisible) {
+            // Scrolleando hacia arriba MÁS de 10px
+            showHeaderFooter();
+            headerFooterVisible = true;
+        }
+
+        // Actualizar posición anterior
+        previousScrollY = currentScrollY;
     }
-
-    const currentScrollY = window.scrollY;
-    const scrollDifference = currentScrollY - previousScrollY;
-
-    // Detectar dirección y aplicar threshold
-    if (scrollDifference > SCROLL_THRESHOLD && headerFooterVisible) {
-        // Scrolleando hacia abajo MÁS de 10px
-        hideHeaderFooter();
-        headerFooterVisible = false;
-    } else if (scrollDifference < -SCROLL_THRESHOLD && !headerFooterVisible) {
-        // Scrolleando hacia arriba MÁS de 10px
-        showHeaderFooter();
-        headerFooterVisible = true;
+    // Si estamos en desktop
+    else {
+        // Ocultamos subheader al empezar a
+        if (window.scrollY > 10) {
+            header.classList.add('desktop-scrolled');
+        } else {
+            header.classList.remove('desktop-scrolled');
+        }
     }
-
-    // Actualizar posición anterior
-    previousScrollY = currentScrollY;
 };
 
 const hideHeaderFooter = () => {
@@ -128,19 +135,19 @@ window.addEventListener('resize', () => {
 /* 
  * Menú desplegable del logo
  *
-*/ 
+*/
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const logoButton = document.getElementById('logoButton');
     const logoDropdown = document.getElementById('logoDropdown');
-    
+
     if (logoButton && logoDropdown) {
         // Toggle del menú al hacer clic en el botón
-        logoButton.addEventListener('click', function(e) {
+        logoButton.addEventListener('click', function (e) {
             e.stopPropagation(); // Evita que el clic se propague
-            
+
             const isExpanded = logoButton.getAttribute('aria-expanded') === 'true';
-            
+
             // Cambiar estado
             logoButton.setAttribute('aria-expanded', !isExpanded);
             logoDropdown.classList.toggle('open');
@@ -150,10 +157,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const dropdownLinks = logoDropdown.querySelectorAll('.dropdown-item');
 
         dropdownLinks.forEach(link => {
-            link.addEventListener('click', function(e){
+            link.addEventListener('click', function (e) {
                 e.preventDefault(); // Bloqueamos salto de ancla (por defecto)
                 const targetId = this.getAttribute('href').substring(1);
-                if (typeof navigateTo === 'function'){
+                if (typeof navigateTo === 'function') {
                     navigateTo(targetId);
                 }
 
@@ -162,17 +169,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 logoDropdown.classList.remove('open');
             });
         });
-        
+
         // Cerrar el menú al hacer clic fuera
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!logoButton.contains(e.target) && !logoDropdown.contains(e.target)) {
                 logoButton.setAttribute('aria-expanded', 'false');
                 logoDropdown.classList.remove('open');
             }
         });
-        
+
         // Cerrar con la tecla Escape
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 logoButton.setAttribute('aria-expanded', 'false');
                 logoDropdown.classList.remove('open');

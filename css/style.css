@@ -67,13 +67,40 @@ nav {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 1rem 0 0 0;
+    padding: 0;
     flex-wrap: wrap;
     text-align: center;
+
+    /* Propiedades base para la animación */
+    opacity: 1;
+    max-height: 150px;
+    /* Valor seguro mayor que el contenido real */
+    overflow: hidden;
+
+    /* Transición al MOSTRAR (volver arriba):
+       1. max-height y padding ocurren inmediatamente.
+       2. opacity espera 0.3s para empezar. */
+    transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out 0.5s;
+
 
     @media (width <=768px) {
         display: none;
     }
+}
+
+.subheader p {
+    margin: 0;
+}
+
+/* Cuando detectamos scroll, colapsamos el subheader */
+header.desktop-scrolled .subheader {
+    max-height: 0;
+    opacity: 0;
+
+    /* Transición al OCULTAR (hacer scroll):
+       1. opacity ocurre inmediatamente.
+       2. max-height y padding esperan 0.3s (lo que tarda opacity) para empezar. */
+    transition: opacity 0.3s ease-in-out, max-height 0.5s ease-in-out 0.5s;
 }
 
 .logo {
@@ -625,7 +652,7 @@ footer.hidden {
 .footer-link:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
-    border-color: var(--primary-color);    
+    border-color: var(--primary-color);
 }
 
 .footer-link svg {
