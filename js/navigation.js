@@ -87,8 +87,6 @@ const handleScroll = () => {
         // Ocultamos subheader al empezar a
         if (window.scrollY > 10) {
             header.classList.add('desktop-scrolled');
-        } else {
-            header.classList.remove('desktop-scrolled');
         }
     }
 };
