@@ -19,7 +19,7 @@
 ### ORDINADOR
 
 - Aquesta frase és important i potser caldria destacar-la més: *"Tu herramienta de ayuda para tomar una decisión informada sobre el cribado de cáncer colorrectal"*. En canvi, "Bienvenido a Decision-aid" ocupa molt espai [✅]
-- El text del bloc *"¿por qué es importante?"* aniria fora
+- El text del bloc *"¿por qué es importante?"* aniria fora [✅]
 - S'implementarà a l'ordinador l'scroll?
 - La barra de progrés està pendent d'incorporar-se, estaria genial que es pogués visualitzar
 
